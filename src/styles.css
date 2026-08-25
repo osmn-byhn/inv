@@ -772,6 +772,22 @@ textarea {
   margin-top: 0.4rem;
 }
 
+.btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.rsvp-error {
+  margin: 0;
+  text-align: center;
+  color: #9c3b3b;
+  font-size: 0.86rem;
+}
+
+.rsvp-error[hidden] {
+  display: none;
+}
+
 .rsvp-panel {
   background:
     radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.7), transparent 18rem),

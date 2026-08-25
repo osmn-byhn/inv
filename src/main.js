@@ -208,13 +208,49 @@ function observeReveal() {
   document.querySelectorAll(".reveal").forEach((node) => observer.observe(node));
 }
 
+async function saveToJsonBin(entry) {
+  const { binId, accessKey } = data.jsonbin;
+  const url = `https://api.jsonbin.io/v3/b/${binId}`;
+  const headers = {
+    "Content-Type": "application/json",
+    "X-Access-Key": accessKey,
+  };
+
+  const read = await fetch(`${url}/latest`, { headers });
+  if (!read.ok) {
+    throw new Error("Katılım listesi okunamadı.");
+  }
+
+  const payload = await read.json();
+  const record = payload.record && Array.isArray(payload.record.responses)
+    ? payload.record
+    : { event: "Fırat & Birsu Düğünü", responses: [] };
+
+  record.responses.push(entry);
+
+  const write = await fetch(url, {
+    method: "PUT",
+    headers: {
+      ...headers,
+      "X-Bin-Versioning": "false",
+    },
+    body: JSON.stringify(record),
+  });
+
+  if (!write.ok) {
+    throw new Error("Yanıt kaydedilemedi.");
+  }
+}
+
 function bindRsvp() {
   const form = $("rsvpForm");
   const guestsField = $("guestsField");
   const success = $("rsvpSuccess");
+  const errorBox = $("rsvpError");
   const guestsInput = form.guests;
   const minus = $("guestMinus");
   const plus = $("guestPlus");
+  const submit = form.querySelector('button[type="submit"]');
 
   const setGuests = (value) => {
     guestsInput.value = String(Math.min(10, Math.max(1, value)));
@@ -230,8 +266,9 @@ function bindRsvp() {
     if (attending && Number(guestsInput.value) < 1) setGuests(1);
   });
 
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
+    errorBox.hidden = true;
     const attending = form.status.value === "yes";
     const name = form.name.value.trim();
     const guests = attending ? Number(guestsInput.value || 1) : 0;
@@ -243,14 +280,25 @@ function bindRsvp() {
       at: new Date().toISOString(),
     };
 
-    const current = JSON.parse(localStorage.getItem("rsvp-firat-birsu") || "[]");
-    current.push(payload);
-    localStorage.setItem("rsvp-firat-birsu", JSON.stringify(current));
-    form.hidden = true;
-    success.hidden = false;
-    $("rsvpSuccessText").textContent = attending
-      ? `${name}, ${guests} kişilik yerinizi ayırdık. Sizi 5 Ekim’de görmek için sabırsızlanıyoruz.`
-      : `${name}, yanıtınız için teşekkürler. Kalben yanımızda olduğunuzu biliyoruz.`;
+    submit.disabled = true;
+    submit.textContent = "Gönderiliyor...";
+
+    try {
+      await saveToJsonBin(payload);
+      const current = JSON.parse(localStorage.getItem("rsvp-firat-birsu") || "[]");
+      current.push(payload);
+      localStorage.setItem("rsvp-firat-birsu", JSON.stringify(current));
+      form.hidden = true;
+      success.hidden = false;
+      $("rsvpSuccessText").textContent = attending
+        ? `${name}, ${guests} kişilik yerinizi ayırdık. Sizi 5 Ekim’de görmek için sabırsızlanıyoruz.`
+        : `${name}, yanıtınız için teşekkürler. Kalben yanımızda olduğunuzu biliyoruz.`;
+    } catch {
+      errorBox.hidden = false;
+      errorBox.textContent = "Yanıt gönderilemedi. Lütfen tekrar deneyin.";
+      submit.disabled = false;
+      submit.textContent = "Yanıtı gönder";
+    }
   });
 }
 

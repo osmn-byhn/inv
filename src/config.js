@@ -27,4 +27,8 @@ export const invitation = {
     { title: "Düğün", time: "19:30", note: "Yemek, müzik ve dans" },
   ],
   rsvpDeadline: "2026-09-20",
+  jsonbin: {
+    binId: "6a8e2741da38895dfe10b581",
+    accessKey: "$2a$10$zXuxGBQ3ceFhmHi7bx/Wb.CjioLOn0OowPpWXatROwGOo7pe.CbDC",
+  },
 };
