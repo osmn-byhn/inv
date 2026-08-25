@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#8ebdd8" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="description" content="Fırat Doğan & Birsu Doğan dijital düğün davetiyesi" />
+    <title>Fırat & Birsu | Evleniyoruz</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Great+Vibes&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%238ebdd8'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-size='22' fill='%23fff4e8' font-family='serif'%3EF%26B%3C/text%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div class="stage">
+      <div id="envelope" class="envelope" aria-hidden="false">
+        <div class="envelope__glow"></div>
+        <div class="orbit" aria-hidden="true">
+          <img class="orbit__daisy orbit__daisy--1" src="/daisy.svg" alt="" />
+          <img class="orbit__daisy orbit__daisy--2" src="/daisy.svg" alt="" />
+          <img class="orbit__daisy orbit__daisy--3" src="/daisy.svg" alt="" />
+          <img class="orbit__daisy orbit__daisy--4" src="/daisy.svg" alt="" />
+          <img class="orbit__daisy orbit__daisy--5" src="/daisy.svg" alt="" />
+          <img class="orbit__daisy orbit__daisy--6" src="/daisy.svg" alt="" />
+        </div>
+        <div class="envelope__card">
+          <div class="envelope__flap"></div>
+          <div class="envelope__face">
+            <p class="eyebrow">Düğün Davetiyesi</p>
+            <h1 class="script envelope__names">Fırat &amp; Birsu</h1>
+            <p class="envelope__family">Doğan</p>
+            <button id="openInvite" class="seal" type="button" aria-label="Davetiyeyi aç">
+              <span class="seal__ring"></span>
+              <span class="seal__text">F ♥ B</span>
+            </button>
+            <p class="envelope__hint">Mühüre dokunarak açın</p>
+          </div>
+        </div>
+      </div>
+
+      <main id="invite" class="invite is-locked">
+        <button id="musicBtn" class="music-btn" type="button" aria-label="Müziği aç" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 18V6.2L20 4v11.7" fill="none" stroke="currentColor" stroke-width="1.6" />
+            <circle cx="7.2" cy="18.2" r="2.4" />
+            <circle cx="17.2" cy="15.9" r="2.4" />
+          </svg>
+        </button>
+
+        <section class="hero">
+          <img class="hero__image" src="/hero-sky.jpg" alt="" />
+          <div class="hero__veil"></div>
+          <svg class="birds" viewBox="0 0 400 180" aria-hidden="true">
+            <g class="bird bird--a">
+              <path d="M20 70c12-8 18-6 22 0 4-8 12-10 22-2" />
+            </g>
+            <g class="bird bird--b">
+              <path d="M250 40c8-6 12-4 15 0 3-6 9-8 16-1" />
+            </g>
+            <g class="bird bird--c">
+              <path d="M310 88c10-7 15-5 18 0 4-7 11-9 20-2" />
+            </g>
+          </svg>
+          <div class="hero__daisies" aria-hidden="true">
+            <img src="/daisy.svg" alt="" />
+            <img src="/daisy.svg" alt="" />
+            <img src="/daisy.svg" alt="" />
+          </div>
+          <div class="hero__content">
+            <p class="eyebrow hero__kicker">Bir ömür boyu</p>
+            <h1 class="script hero__names">Fırat ve Birsu</h1>
+            <p class="hero__tag">Evleniyoruz</p>
+            <div class="date-block" id="dateBlock">
+              <span class="date-block__side">
+                <i></i>
+                <b id="monthLabel">Ekim</b>
+                <i></i>
+              </span>
+              <span class="date-block__day" id="dayLabel">05</span>
+              <span class="date-block__side">
+                <i></i>
+                <b id="yearLabel">2026</b>
+                <i></i>
+              </span>
+            </div>
+            <p class="date-block__weekday" id="weekdayLabel">Pazartesi</p>
+            <button id="remindBtn" class="pill" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="4" y="6" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.5" />
+                <path d="M8 4v4M16 4v4M4 10h16" fill="none" stroke="currentColor" stroke-width="1.5" />
+              </svg>
+              Hatırlatıcı al
+            </button>
+            <div class="scroll-hint">
+              <span class="chevron"></span>
+              Kaydırınız
+            </div>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <div class="wrap">
+          <p class="eyebrow">Geri sayım</p>
+          <h2 class="section-title">Mutluluğa kalan</h2>
+          <div class="countdown" id="countdown">
+            <div class="count-card"><strong id="cDays">00</strong><span>Gün</span></div>
+            <div class="count-card"><strong id="cHours">00</strong><span>Saat</span></div>
+            <div class="count-card"><strong id="cMins">00</strong><span>Dakika</span></div>
+            <div class="count-card"><strong id="cSecs">00</strong><span>Saniye</span></div>
+          </div>
+          <p class="countdown-done" id="countdownDone" hidden>Mutluluğumuz başladı.</p>
+          </div>
+        </section>
+
+        <div class="story">
+        <section class="letter reveal">
+          <div class="daisy-spray" aria-hidden="true">
+            <img src="/daisy.svg" alt="" />
+            <img src="/daisy.svg" alt="" />
+            <img src="/daisy.svg" alt="" />
+          </div>
+          <p class="quote" id="quote">İki kalp, bir gökyüzü.</p>
+          <div class="letter__body" id="letterBody"></div>
+          <p class="letter__sign script">Fırat &amp; Birsu</p>
+        </section>
+
+        <section class="panel reveal">
+          <p class="eyebrow">Program</p>
+          <h2 class="section-title">Akış</h2>
+          <ol class="timeline" id="timeline"></ol>
+        </section>
+        </div>
+
+        <section class="venue reveal">
+          <div class="map-stage" id="mapStage">
+            <div id="venueMap" class="map" role="img" aria-label="Park Zirve Zaimoğlu konumu"></div>
+            <div class="map-glow"></div>
+          </div>
+          <div class="venue__card">
+            <p class="eyebrow">Mekân</p>
+            <h2 id="venueName">Park Zirve Zaimoğlu</h2>
+            <p id="venueHall">Seyhan Gölü manzarası</p>
+            <p class="venue__address" id="venueAddress">Karslılar Mah. 82046. Sk. No:2, Çukurova / Adana</p>
+            <p class="venue__dress">Kıyafet kodu: <span id="dressCode">Şık ve zarif</span></p>
+            <div class="btn-row">
+              <a id="mapsLink" class="btn" href="https://maps.app.goo.gl/YuPfS7NUph6SKcMz7?g_st=ipc" target="_blank" rel="noreferrer">Yol tarifi</a>
+              <button id="calendarBtn" class="btn btn--ghost" type="button">Takvime ekle</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel rsvp-panel reveal" id="rsvp">
+          <div class="rsvp-card">
+            <img class="rsvp-card__daisy" src="/daisy.svg" alt="" />
+            <p class="eyebrow">Katılım</p>
+            <h2 class="section-title">Yanınızda olmak isteriz</h2>
+            <p class="lede">
+              Lütfen <span id="rsvpDeadline">20 Eylül</span> tarihine kadar yanıt verin.
+            </p>
+            <form id="rsvpForm" class="rsvp">
+              <label class="field">
+                <span>Adınız soyadınız</span>
+                <input name="name" type="text" autocomplete="name" required placeholder="Adınızı yazın" />
+              </label>
+              <fieldset class="status-grid">
+                <legend>Katılımınız</legend>
+                <label class="status-card">
+                  <input type="radio" name="status" value="yes" required />
+                  <span class="status-card__mark" aria-hidden="true">♥</span>
+                  <strong>Geleceğim</strong>
+                  <small>Seve seve oradayım</small>
+                </label>
+                <label class="status-card status-card--no">
+                  <input type="radio" name="status" value="no" />
+                  <span class="status-card__mark" aria-hidden="true">✕</span>
+                  <strong>Gelemeyeceğim</strong>
+                  <small>Kalben yanınızdayım</small>
+                </label>
+              </fieldset>
+              <div class="stepper-wrap" id="guestsField">
+                <span>Kaç kişi olacaksınız?</span>
+                <div class="stepper">
+                  <button id="guestMinus" type="button" aria-label="Azalt">−</button>
+                  <input name="guests" type="number" min="1" max="10" value="1" readonly />
+                  <button id="guestPlus" type="button" aria-label="Artır">+</button>
+                </div>
+              </div>
+              <label class="field">
+                <span>Notunuz <em>(isteğe bağlı)</em></span>
+                <textarea name="note" rows="3" placeholder="Alerji, tebrik veya bir dilek..."></textarea>
+              </label>
+              <button class="btn btn--full" type="submit">Yanıtı gönder</button>
+            </form>
+            <div class="rsvp-success" id="rsvpSuccess" hidden>
+              <img src="/daisy.svg" alt="" />
+              <p class="script">Teşekkürler</p>
+              <p id="rsvpSuccessText">Yanıtınız bize ulaştı.</p>
+            </div>
+          </div>
+        </section>
+
+        <footer class="footer">
+          <img class="footer__daisy" src="/daisy.svg" alt="" />
+          <p class="script">F &amp; B</p>
+          <p>Fırat Doğan &amp; Birsu Doğan</p>
+          <button id="shareBtn" class="pill pill--dark" type="button">Davetiyeyi paylaş</button>
+        </footer>
+      </main>
+    </div>
+
+    <div id="petals" class="petals" aria-hidden="true"></div>
+    <audio id="music" loop preload="none"></audio>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
