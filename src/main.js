@@ -1,6 +1,18 @@
 import { invitation as data } from "./config.js";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import {
+  findByCode,
+  findByFingerprint,
+  getSavedCode,
+  loadRecord,
+  makeFingerprint,
+  makeInviteCode,
+  saveRecord,
+  storeCode,
+} from "./storage.js";
+import { memoryBlobUrl, uploadMemory } from "./r2.js";
+import { bindFortune } from "./fortune.js";
 
 const months = [
   "Ocak",
@@ -208,44 +220,47 @@ function observeReveal() {
   document.querySelectorAll(".reveal").forEach((node) => observer.observe(node));
 }
 
-async function saveToJsonBin(entry) {
-  const { binId, accessKey } = data.jsonbin;
-  const url = `https://api.jsonbin.io/v3/b/${binId}`;
-  const headers = {
-    "Content-Type": "application/json",
-    "X-Access-Key": accessKey,
-  };
-
-  const read = await fetch(`${url}/latest`, { headers });
-  if (!read.ok) {
-    throw new Error("Katılım listesi okunamadı.");
+function showInviteSuccess(entry, { returning = false } = {}) {
+  const form = $("rsvpForm");
+  const success = $("rsvpSuccess");
+  const attending = entry.status === "yes";
+  form.hidden = true;
+  success.hidden = false;
+  $("codeBox").hidden = false;
+  $("inviteCodeValue").textContent = entry.code;
+  if (returning) {
+    $("rsvpSuccessText").textContent = attending
+      ? `${entry.name}, bu cihazdan katılımınız zaten kayıtlı. Davet kodunuz aşağıda; anı bırakırken bunu kullanın.`
+      : `${entry.name}, yanıtınız daha önce alınmıştı. Davet kodunuz aşağıda.`;
+    return;
   }
+  $("rsvpSuccessText").textContent = attending
+    ? `${entry.name}, ${entry.guests} kişilik yerinizi ayırdık. Davet kodunuzu saklayın; anı duvarına bununla fotoğraf ve video bırakacaksınız.`
+    : `${entry.name}, yanıtınız için teşekkürler. Anı bırakmak isterseniz davet kodunuz aşağıda.`;
+}
 
-  const payload = await read.json();
-  const record = payload.record && Array.isArray(payload.record.responses)
-    ? payload.record
-    : { event: "Fırat & Birsu Düğünü", responses: [] };
-
-  record.responses.push(entry);
-
-  const write = await fetch(url, {
-    method: "PUT",
-    headers: {
-      ...headers,
-      "X-Bin-Versioning": "false",
-    },
-    body: JSON.stringify(record),
-  });
-
-  if (!write.ok) {
-    throw new Error("Yanıt kaydedilemedi.");
+async function restoreRsvp() {
+  const saved = getSavedCode();
+  try {
+    const [record, fingerprint] = await Promise.all([loadRecord(), makeFingerprint()]);
+    const existing =
+      findByFingerprint(record, fingerprint) || (saved ? findByCode(record, saved) : null);
+    if (existing?.code) {
+      storeCode(existing.code);
+      showInviteSuccess(existing, { returning: true });
+      fillMemoryCode(existing.code);
+      return record;
+    }
+  } catch {
+    if (saved) fillMemoryCode(saved);
   }
+  if (saved) fillMemoryCode(saved);
+  return null;
 }
 
 function bindRsvp() {
   const form = $("rsvpForm");
   const guestsField = $("guestsField");
-  const success = $("rsvpSuccess");
   const errorBox = $("rsvpError");
   const guestsInput = form.guests;
   const minus = $("guestMinus");
@@ -266,38 +281,161 @@ function bindRsvp() {
     if (attending && Number(guestsInput.value) < 1) setGuests(1);
   });
 
+  $("copyCode")?.addEventListener("click", async () => {
+    const code = $("inviteCodeValue").textContent.trim();
+    if (!code) return;
+    try {
+      await navigator.clipboard.writeText(code);
+      $("copyCode").textContent = "Kopyalandı";
+      window.setTimeout(() => {
+        $("copyCode").textContent = "Kopyala";
+      }, 1800);
+    } catch {
+      $("copyCode").textContent = "Seçip kopyalayın";
+    }
+  });
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     errorBox.hidden = true;
     const attending = form.status.value === "yes";
     const name = form.name.value.trim();
     const guests = attending ? Number(guestsInput.value || 1) : 0;
-    const payload = {
-      name,
-      status: form.status.value,
-      guests,
-      note: form.note.value.trim(),
-      at: new Date().toISOString(),
-    };
 
     submit.disabled = true;
     submit.textContent = "Gönderiliyor...";
 
     try {
-      await saveToJsonBin(payload);
-      const current = JSON.parse(localStorage.getItem("rsvp-firat-birsu") || "[]");
-      current.push(payload);
-      localStorage.setItem("rsvp-firat-birsu", JSON.stringify(current));
-      form.hidden = true;
-      success.hidden = false;
-      $("rsvpSuccessText").textContent = attending
-        ? `${name}, ${guests} kişilik yerinizi ayırdık. Sizi 5 Ekim’de görmek için sabırsızlanıyoruz.`
-        : `${name}, yanıtınız için teşekkürler. Kalben yanımızda olduğunuzu biliyoruz.`;
+      const fingerprint = await makeFingerprint();
+      const record = await loadRecord();
+      const existing = findByFingerprint(record, fingerprint);
+      if (existing) {
+        storeCode(existing.code);
+        showInviteSuccess(existing, { returning: true });
+        fillMemoryCode(existing.code);
+        return;
+      }
+
+      const entry = {
+        name,
+        status: form.status.value,
+        guests,
+        note: form.note.value.trim(),
+        at: new Date().toISOString(),
+        code: makeInviteCode(record.responses),
+        fingerprint: fingerprint.hard,
+        softFingerprint: fingerprint.soft,
+      };
+
+      record.responses.push(entry);
+      await saveRecord(record);
+      storeCode(entry.code);
+      showInviteSuccess(entry);
+      fillMemoryCode(entry.code);
     } catch {
       errorBox.hidden = false;
       errorBox.textContent = "Yanıt gönderilemedi. Lütfen tekrar deneyin.";
       submit.disabled = false;
       submit.textContent = "Yanıtı gönder";
+    }
+  });
+}
+
+function fillMemoryCode(code) {
+  const input = document.querySelector("#memoryForm [name='code']");
+  if (input && !input.value) input.value = code;
+}
+
+function memoryCard(item, src) {
+  if (item.type === "video") {
+    return `
+      <figure class="memory-tile">
+        <video src="${src}" controls playsinline preload="metadata"></video>
+        ${item.caption ? `<figcaption>${item.caption}</figcaption>` : ""}
+      </figure>
+    `;
+  }
+  return `
+    <figure class="memory-tile">
+      <img src="${src}" alt="${item.caption || "Düğün anısı"}" />
+      ${item.caption ? `<figcaption>${item.caption}</figcaption>` : ""}
+    </figure>
+  `;
+}
+
+async function renderMemories(record) {
+  const grid = $("memoryGrid");
+  if (!grid) return;
+  const items = [...(record.memories || [])].slice(0, 24);
+  if (!items.length) {
+    grid.innerHTML = `<p class="memory-empty">Henüz anı yok. İlk kareyi siz bırakın.</p>`;
+    return;
+  }
+
+  grid.innerHTML = items
+    .map((item, index) => `<div class="memory-tile is-loading" data-i="${index}"></div>`)
+    .join("");
+
+  await Promise.all(
+    items.map(async (item, index) => {
+      const slot = grid.querySelector(`[data-i="${index}"]`);
+      if (!slot) return;
+      try {
+        const src = await memoryBlobUrl(item.key);
+        slot.outerHTML = memoryCard(item, src);
+      } catch {
+        slot.outerHTML = `<figure class="memory-tile memory-tile--miss"><p>Anı yüklenemedi</p></figure>`;
+      }
+    }),
+  );
+}
+
+function bindMemory() {
+  const form = $("memoryForm");
+  if (!form) return;
+  const errorBox = $("memoryError");
+  const okBox = $("memoryOk");
+  const submit = form.querySelector('button[type="submit"]');
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    errorBox.hidden = true;
+    okBox.hidden = true;
+    const code = form.code.value.trim().toUpperCase();
+    const file = form.file.files[0];
+    const caption = form.caption.value.trim();
+    if (!file) return;
+
+    submit.disabled = true;
+    submit.textContent = "Yükleniyor...";
+
+    try {
+      const record = await loadRecord();
+      const guest = findByCode(record, code);
+      if (!guest) {
+        throw new Error("Davet kodu bulunamadı. Önce katılım formunu doldurun.");
+      }
+      const uploaded = await uploadMemory(file, guest.code);
+      record.memories.unshift({
+        key: uploaded.key,
+        type: uploaded.type,
+        name: uploaded.name,
+        caption,
+        code: guest.code,
+        guest: guest.name,
+        at: new Date().toISOString(),
+      });
+      await saveRecord(record);
+      form.file.value = "";
+      form.caption.value = "";
+      okBox.hidden = false;
+      await renderMemories(record);
+    } catch (error) {
+      errorBox.hidden = false;
+      errorBox.textContent = error.message || "Anı gönderilemedi. Lütfen tekrar deneyin.";
+    } finally {
+      submit.disabled = false;
+      submit.textContent = "Anıyı bırak";
     }
   });
 }
@@ -438,8 +576,14 @@ function init() {
   startCountdown();
   observeReveal();
   bindRsvp();
+  bindMemory();
+  bindFortune();
   bindMusic();
   initMap();
+  restoreRsvp().then((record) => {
+    if (record) renderMemories(record);
+    else loadRecord().then(renderMemories).catch(() => {});
+  });
   document.body.style.overflow = "hidden";
 
   $("openInvite").addEventListener("click", openEnvelope);

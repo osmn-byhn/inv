@@ -454,6 +454,10 @@ textarea {
   background: #5c5348;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 .scroll-hint {
   margin-top: auto;
   display: flex;
@@ -1017,6 +1021,293 @@ textarea {
   max-width: 28rem;
 }
 
+.code-box {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  margin-top: 1.1rem;
+  padding: 1rem 1.2rem 1.05rem;
+  min-width: min(100%, 260px);
+  border-radius: 18px;
+  background: #fff;
+  border: 1px dashed rgba(184, 149, 106, 0.55);
+}
+
+.code-box[hidden] {
+  display: none;
+}
+
+.code-box span {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.code-box strong {
+  font-family: var(--serif);
+  font-size: 1.7rem;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+}
+
+.code-box button,
+.code-jump {
+  margin-top: 0.2rem;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.45rem 0.95rem;
+  background: #5c5348;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.78rem;
+  text-decoration: none;
+}
+
+.code-jump {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid rgba(92, 83, 72, 0.22);
+}
+
+.fortune-stage.is-play .fortune-daisy {
+  animation: float3d 3.2s ease-in-out infinite;
+}
+
+.memory-panel,
+.fortune-panel,
+.code-help {
+  background: var(--paper);
+}
+
+.memory-form {
+  display: grid;
+  gap: 1rem;
+  max-width: 560px;
+  margin: 0 auto 1.8rem;
+  text-align: left;
+}
+
+.memory-form input {
+  width: 100%;
+  border: 1px solid rgba(92, 83, 72, 0.14);
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  background: #fff;
+  color: var(--ink);
+  outline: none;
+}
+
+.memory-form input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px rgba(184, 149, 106, 0.16);
+}
+
+.memory-form input[name="code"] {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.memory-ok {
+  margin: 0;
+  text-align: center;
+  color: #3d6b4f;
+  font-size: 0.9rem;
+}
+
+.memory-ok[hidden] {
+  display: none;
+}
+
+.memory-empty {
+  display: block;
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--muted);
+}
+
+.memory-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+}
+
+.memory-tile {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #efe7db;
+  min-height: 140px;
+}
+
+.memory-tile.is-loading {
+  animation: pulse 1.6s ease infinite;
+}
+
+.memory-tile img,
+.memory-tile video {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  background: #ddd4c6;
+}
+
+.memory-tile figcaption {
+  padding: 0.55rem 0.7rem 0.7rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.memory-tile--miss {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.fortune-stage {
+  position: relative;
+  min-height: 460px;
+  margin-top: 0.6rem;
+  border-radius: 28px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 12%, rgba(255, 255, 255, 0.45), transparent 16rem),
+    linear-gradient(180deg, #b9d7ea 0%, #d7e6c4 48%, #9db56f 100%);
+  box-shadow: var(--shadow);
+}
+
+.meadow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 42%;
+  z-index: 1;
+}
+
+.meadow-daisy {
+  position: absolute;
+  width: 52px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  filter: drop-shadow(0 8px 8px rgba(50, 70, 30, 0.18));
+  animation: meadowBob 3.4s ease-in-out infinite;
+}
+
+.meadow-daisy img {
+  width: 100%;
+  pointer-events: none;
+}
+
+.fortune-play {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: 0.7rem;
+  padding: 2.4rem 1rem 7.5rem;
+  pointer-events: none;
+}
+
+.fortune-daisy,
+.fortune-word,
+#fortuneReset {
+  pointer-events: auto;
+}
+
+.fortune-daisy {
+  position: relative;
+  width: 230px;
+  height: 230px;
+  filter: drop-shadow(0 16px 20px rgba(40, 50, 20, 0.18));
+}
+
+.fal-petal {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 30px;
+  height: 82px;
+  margin: -82px 0 0 -15px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transform-origin: 50% 100%;
+  transform: rotate(var(--a));
+}
+
+.fal-petal span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50% 50% 42% 42%;
+  background: linear-gradient(#fffef9, #f4ead6);
+  box-shadow: 0 6px 12px rgba(80, 60, 40, 0.12);
+}
+
+.fal-petal.is-gone {
+  animation: petalPluck 0.48s ease forwards;
+  pointer-events: none;
+}
+
+.fal-heart {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle at 32% 32%, #ffe27a, #e2ae34);
+  color: #fff;
+  font-size: 1.2rem;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.18);
+}
+
+.fortune-word {
+  min-height: 2.2rem;
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.7rem;
+  font-style: italic;
+  color: #3d4630;
+}
+
+.fortune-word[data-tone="yes"] { color: #7a2e2e; }
+.fortune-word[data-tone="no"] { color: #4a5340; }
+
+.help-copy {
+  display: grid;
+  gap: 0.9rem;
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.help-copy p {
+  margin: 0;
+}
+
+@keyframes meadowBob {
+  0%, 100% { transform: translateY(0) rotate(-8deg); }
+  50% { transform: translateY(-10px) rotate(8deg); }
+}
+
+@keyframes petalPluck {
+  to {
+    opacity: 0;
+    transform: rotate(var(--a)) translateY(-48px) scale(0.35);
+  }
+}
+
 @media (max-width: 520px) {
   .status-grid {
     grid-template-columns: 1fr;
@@ -1355,6 +1646,9 @@ textarea {
   }
 
   .panel#rsvp,
+  .panel.memory-panel,
+  .fortune-panel,
+  .code-help,
   .footer {
     width: min(100% - 4rem, 1120px);
     margin-left: auto;
@@ -1366,6 +1660,17 @@ textarea {
     width: min(100% - 4rem, 640px);
     margin-top: 2.2rem;
     box-shadow: var(--shadow);
+  }
+
+  .panel.memory-panel,
+  .fortune-panel,
+  .code-help {
+    margin-top: 2.2rem;
+    box-shadow: var(--shadow);
+  }
+
+  .memory-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .rsvp-card {

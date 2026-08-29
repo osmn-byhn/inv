@@ -22,13 +22,20 @@ export const invitation = {
     lng: 35.3032204,
   },
   events: [
-    { title: "Nikah", time: "16:00", note: "Kısa nikah töreni" },
-    { title: "Kokteyl", time: "18:00", note: "Karşılama & fotoğraf" },
-    { title: "Düğün", time: "19:30", note: "Yemek, müzik ve dans" },
+    { title: "Nikah", time: "19.00", note: "Kısa nikah töreni" },
+    { title: "Kokteyl", time: "19.30", note: "Karşılama & fotoğraf" },
+    { title: "Düğün", time: "20.00", note: "Yemek, müzik ve dans" },
   ],
   rsvpDeadline: "2026-09-20",
   jsonbin: {
     binId: "6a8e2741da38895dfe10b581",
     accessKey: "$2a$10$zXuxGBQ3ceFhmHi7bx/Wb.CjioLOn0OowPpWXatROwGOo7pe.CbDC",
+  },
+  r2: {
+    accountId: "c1a501632a4edd44c12da915c96cc239",
+    bucket: "inv",
+    endpoint: "https://c1a501632a4edd44c12da915c96cc239.r2.cloudflarestorage.com",
+    accessKeyId: "1691e1998279d106ca6a743c1fe48052",
+    secretAccessKey: "bd705cbee33f7d21322aadddc4a6d4e566bc660f1ee3d22ab56e2e576002c226",
   },
 };
